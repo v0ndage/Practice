@@ -1,0 +1,117 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define MAX 50
+
+typedef struct airPdata { 
+    char *siteNumber;
+    char *LocID;
+    char *fieldName;
+    char *city;
+    char *state;
+    char *latitude;
+    char *longitude;
+    char *controlTower; 
+} airPdata;
+
+int main(int argc, char **argv) {
+
+    char *input=argv[1];
+    char *output=argv[2];
+    char *delimiter = ",";
+    char buff[MAX];
+
+    FILE *fp;
+
+    // opening file
+
+    fp = fopen(input, "r");
+
+        // error check
+
+        if (fp == NULL) {
+            fprintf(stderr, "etl ERROR: \"%s\" not found\n", input);    exit(-1);
+        }
+           
+        int row=0;
+
+        struct airPdata * temp = malloc(3 * sizeof(struct airPdata));
+
+            // printing headers
+
+            printf("%-12s %-11s %-42s %-34s %-3s %-15s %-16s Tower\n",
+                "FAA Site", "Short Name", "Airport Name", "City", "ST", "Latitude", "Longitude");
+            printf("%-12s %-11s %-42s %-34s %-3s %-15s %-16s =====\n",
+                "========", "==========", "============", "====", "==", "========", "=========");                     
+
+
+        while (fgets(buff, MAX, fp) != NULL) {
+
+            // reading tokens
+
+            char *b;
+            b=buff;
+
+            char * siteNumber             = strsep(&b, delimiter);
+            char * LocID                  = strsep(NULL, delimiter);
+            char * fieldName              = strsep(NULL, delimiter);
+            char * city                   = strsep(NULL, delimiter);
+            char * state                  = strsep(NULL, delimiter);
+            char * latitude               = strsep(NULL, delimiter);
+            char * longitude              = strsep(NULL, delimiter);
+            char * controlTower           = strsep(NULL, delimiter);
+
+            // allocating appropriate memory            
+
+            temp[row].siteNumber    = malloc(sizeof(char) * (strlen(siteNumber) + 1));
+            temp[row].LocID         = malloc(sizeof(char) * (strlen(LocID) + 1));
+            temp[row].fieldName     = malloc(sizeof(char) * (strlen(fieldName) + 1));
+            temp[row].city          = malloc(sizeof(char) * (strlen(city) + 1));
+            temp[row].state         = malloc(sizeof(char) * (strlen(state) + 1));
+            temp[row].latitude      = malloc(sizeof(char) * (strlen(latitude) + 1));
+            temp[row].longitude     = malloc(sizeof(char) * (strlen(longitude) + 1));
+            temp[row].controlTower  = malloc(sizeof(char) * (strlen(controlTower) + 1));
+
+            // copying tokens into struct            
+
+            strcpy(temp[row].siteNumber, siteNumber);
+            strcpy(temp[row].LocID, LocID);
+            strcpy(temp[row].fieldName, fieldName);
+            strcpy(temp[row].city, city);
+            strcpy(temp[row].state, state);
+            strcpy(temp[row].latitude, latitude);
+            strcpy(temp[row].longitude, longitude);
+            strcpy(temp[row].controlTower, controlTower);   
+
+            // printing from struct
+
+            printf("%-12s", temp[row].siteNumber);
+            printf("%-11s", temp[row].LocID);
+            printf("%-42s", temp[row].fieldName);
+            printf("%-34s", temp[row].city);
+            printf("%-3s", temp[row].state);
+            printf("%-15s", temp[row].latitude);
+            printf("%-16s", temp[row].longitude);
+            printf(" %s", temp[row].controlTower);
+
+            row++;
+        }
+
+    fclose(fp);
+
+    int i;
+
+    for (i=0; i<row; i++) {
+
+        free(temp[i].siteNumber);
+        free(temp[i].LocID);
+        free(temp[i].fieldName);
+        free(temp[i].city);
+        free(temp[i].state);
+        free(temp[i].latitude);
+        free(temp[i].longitude);
+        free(temp[i].controlTower);
+    }
+
+    free(temp);
+}
