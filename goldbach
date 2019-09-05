@@ -1,4 +1,5 @@
 //This simple program illuminates the 300 year old Goldbach Congjecture by picturing the pattern of sums of Primes (it is just for fun)
+//See example: https://imgur.com/AjWIkn7
 
 #include <stdlib.h>
 #include <stdio.h>
